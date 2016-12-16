@@ -391,6 +391,9 @@ class ReportParser extends XMLParserGlobal{
 			$entry_query .= intval($defence_df).",";
 
 			// scantime, user_id, scanned
+            $diffTime = "+9 hours"; // for english server into korean server #jc01rho
+            $report["datetime"] = date("Y.m.d H:i:s",strtotime($diffTime, strtotime(str_replace(".","-",$report["datetime"]))));
+            //
 			$entry_query .= DB::getDB()->quote(str_replace(".","-",$report["datetime"])).",";
 			$entry_query .= $userid.",";
 			$entry_query .= "'".$report["scandepth"]."',";
