@@ -125,7 +125,15 @@ class ActivityParser extends XMLParserGlobal{
 		$minute  = intval($activity_DOMNode->getAttribute("minute"));
 		$weekday = intval($activity_DOMNode->getAttribute("weekday"));
 
-		return $this->buffer_activity($year,$month,$day,$hour,$minute,$weekday,$player_id,$ogame_playerid,$type);
+        $DiffTime = "+9 hours";
+        $combinedString = $year ."-".$month ."-".$day ." ".$hour.":".$minute.":00";
+
+
+        $day = date("d",strtotime($DiffTime, strtotime(str_replace(".","-",$combinedString))));
+        $hour = date("H",strtotime($DiffTime, strtotime(str_replace(".","-",$combinedString))));
+
+
+        return $this->buffer_activity($year,$month,$day,$hour,$minute,$weekday,$player_id,$ogame_playerid,$type);
 
 	}
 
