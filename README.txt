@@ -13,3 +13,7 @@ The information needed for an update are located at:
 http://en.wiki.galaxytool.eu/index.php/Updates (English)
 http://de.wiki.galaxytool.eu/index.php/Update (German)
 http://es.wiki.galaxytool.eu/index.php/Updates (Spanish)
+
+
+added Tables List
+_system.last_update_before added same as last_update

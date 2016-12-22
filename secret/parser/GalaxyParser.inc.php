@@ -536,7 +536,8 @@ class GalaxyParser extends XMLParserGlobal{
 
 		// check what exists already
 		$query  = "SELECT galaxy, system, planet, ogame_playerid, moon, moonsize, metal ,crystal, planetname FROM $this->galaxytable WHERE ";
-		$systems = "INSERT INTO ".$this->systemtable." (galaxy, system, last_update, user_id) VALUES ";
+		$querySystem = "SELECT galaxy, system, last_update,user_id from $this->systemtable WHERE ";
+		$systems = "INSERT INTO ".$this->systemtable." (galaxy, system, last_update, last_update_before ,  user_id) VALUES ";
 		$wheres = array();
 		foreach ($content as $system_data) {
 			$galaxy = $system_data["galaxy"];
@@ -544,11 +545,32 @@ class GalaxyParser extends XMLParserGlobal{
 
 			$query .= "(galaxy=$galaxy AND system=$system) OR ";
 
-			$systems .= "('$galaxy', '$system', NOW(), '$userid'),";
+
+            $querySystem .= "galaxy=$galaxy AND system=$system";
+
+
+            $stmt = $this->query($querySystem);
+            if (!$stmt) {
+                $this->error_object = new ErrorObject(ErrorObject::severity_error , "DB error occurred while updating system data");
+                $this->error_object->add_child_message($this->get_db_error_object());
+                return false;
+            }
+            $last_update_before = "0000-00-00 00:00:00";
+            while ($line = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $last_update_before = $line['last_update'];
+                //$existing_planets[ $line['galaxy'].":".$line['system'].":".$line['planet'] ] = $line;
+            }
+
+
+
+
+
+
+            $systems .= "('$galaxy', '$system', NOW(), '$last_update_before' , '$userid'),";
 		}
 		// update system information
 		$systems = substr($systems, 0, strlen($systems) - 1); // remove last comma
-		$systems .= " ON DUPLICATE KEY UPDATE last_update=VALUES(last_update), user_id=VALUES(user_id)";
+		$systems .= " ON DUPLICATE KEY UPDATE last_update=VALUES(last_update), user_id=VALUES(user_id), last_update_before=VALUES(last_update_before)";
 
 		$stmt = $this->query($systems);
 		if (!$stmt) {
